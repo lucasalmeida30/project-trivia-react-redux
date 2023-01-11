@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import fetchAPIToken from '../redux/actions';
 import { Link } from 'react-router-dom';
+import fetchAPIToken from '../redux/actions';
 
 export default class Login extends Component {
   state = {
