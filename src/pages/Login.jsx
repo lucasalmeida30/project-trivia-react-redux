@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import fetchAPIToken from '../redux/actions';
 
 export default class Login extends Component {
   state = {
@@ -25,6 +27,13 @@ export default class Login extends Component {
     }
   };
 
+  handleClick = async () => {
+    const getToken = await fetchAPIToken();
+    const { history } = this.props;
+    localStorage.setItem('token', getToken.token);
+    history.push('/Game');
+  };
+
   render() {
     const { name, email, isButtonDisabled } = this.state;
     return (
@@ -49,6 +58,7 @@ export default class Login extends Component {
           type="button"
           disabled={ isButtonDisabled }
           data-testid="btn-play"
+          onClick={ this.handleClick }
         >
           Play
         </button>
@@ -57,3 +67,9 @@ export default class Login extends Component {
     );
   }
 }
+
+Login.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
