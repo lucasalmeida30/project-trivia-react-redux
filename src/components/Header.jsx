@@ -24,7 +24,6 @@ const mapStateToProps = (globalState) => ({
   email: globalState.user.email,
   name: globalState.user.name,
   score: globalState.user.score,
-
 });
 
 Header.propTypes = {
