@@ -22,21 +22,37 @@ export default class Game extends Component {
 
   handleQuestion = () => {
     const { results, index } = this.state;
-    const array = [results[index].correct_answer, ...results[index].incorrect_answers] 
-    const teste = results.sort(() => Math.random() - 0.5);
-    this.setState({ teste });
+    const randomize = 0.5;
+    const array = [results[index].correct_answer, ...results[index].incorrect_answers];
+    console.log(array, 'passou aqui');
+    const random = array.sort(() => Math.random() - randomize);
+    this.setState({ teste: random });
   };
 
   render() {
-    const { results, index } = this.state;
+    const { results, index, teste } = this.state;
     return (
       <div>
         <Header />
         {
           results.length > 0 && (
             <div>
-              <p>{results[index].category}</p>
-              <p>{results[index].question}</p>
+              <p data-testid="question-category">{results[index].category}</p>
+              <p data-testid="question-text">{results[index].question}</p>
+              <div data-testid="answer-options">
+                {teste.map((item, indice) => (
+                  <button
+                    key={ indice }
+                    type="button"
+                    data-testid={ item === results[index].correct_answer
+                      ? 'correct-answer'
+                      : `wrong-answer-${index}` }
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+
             </div>
           )
         }
