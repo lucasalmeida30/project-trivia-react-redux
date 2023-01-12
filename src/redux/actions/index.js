@@ -6,6 +6,13 @@ export const fetchAPIToken = async () => {
   return jsonData;
 };
 
+export const fetchAPIQuest = async () => {
+  const getToken = localStorage.getItem('token');
+  const response = await fetch(`https://opentdb.com/api.php?amount=5&token=${getToken}`);
+  const jsonData = await response.json();
+  return jsonData.results;
+};
+
 export const userInfo = (payload) => ({
   type: ADD_INFO_USER,
   payload,
