@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { fetchAPIQuest } from '../redux/actions';
 
 export default class Game extends Component {
   state = {
     results: [],
-    index: 0,
-    teste: [],
+    count: 0,
+    arrayAnswer: [],
   };
 
   async componentDidMount() {
@@ -21,42 +22,56 @@ export default class Game extends Component {
   }
 
   handleQuestion = () => {
-    const { results, index } = this.state;
-    const randomize = 0.5;
-    const array = [results[index].correct_answer, ...results[index].incorrect_answers];
-    console.log(array, 'passou aqui');
-    const random = array.sort(() => Math.random() - randomize);
-    this.setState({ teste: random });
+    const { results, count } = this.state;
+    const arrayQ = [results[count].correct_answer, ...results[count].incorrect_answers];
+    const numberRamdom = 0.5;
+    const answerState = arrayQ.sort(() => Math.random() - numberRamdom);
+    this.setState({ arrayAnswer: answerState });
   };
 
   render() {
-    const { results, index, teste } = this.state;
+    const { results, count, arrayAnswer } = this.state;
     return (
       <div>
         <Header />
         {
           results.length > 0 && (
             <div>
-              <p data-testid="question-category">{results[index].category}</p>
-              <p data-testid="question-text">{results[index].question}</p>
-              <div data-testid="answer-options">
-                {teste.map((item, indice) => (
-                  <button
-                    key={ indice }
-                    type="button"
-                    data-testid={ item === results[index].correct_answer
-                      ? 'correct-answer'
-                      : `wrong-answer-${index}` }
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-
+              <p data-testid="question-category">{results[count].category}</p>
+              <p data-testid="question-text">{results[count].question}</p>
             </div>
           )
         }
+
+        <section data-testid="answer-options">
+          {arrayAnswer.map((answer, index) => {
+            const currentIndex = arrayAnswer.indexOf(results[count].correct_answer);
+            return index === currentIndex ? (
+              <button
+                type="button"
+                data-testid="correct-answer"
+                key={ answer }
+              >
+                {answer}
+              </button>
+            ) : (
+              <button
+                type="button"
+                key={ answer }
+                data-testid={ `wrong-answer-${count}` }
+              >
+                {answer}
+              </button>
+            );
+          })}
+        </section>
       </div>
     );
   }
 }
+
+Game.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
