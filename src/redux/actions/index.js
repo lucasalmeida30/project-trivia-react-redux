@@ -1,4 +1,5 @@
 export const ADD_INFO_USER = 'ADD_INFO_USER';
+export const ADD_TOTAL_ASSERTIONS = 'ADD_TOTAL_ASSERTIONS';
 
 export const fetchAPIToken = async () => {
   const response = await fetch('https://opentdb.com/api_token.php?command=request');
@@ -15,5 +16,10 @@ export const fetchAPIQuest = async () => {
 
 export const userInfo = (payload) => ({
   type: ADD_INFO_USER,
+  payload,
+});
+
+export const addTotalAssertions = (payload) => ({
+  type: ADD_TOTAL_ASSERTIONS,
   payload,
 });
