@@ -40,6 +40,14 @@ export default class Game extends Component {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
   };
 
+  handleNext = () => {
+    let { count } = this.state;
+    const magicNumber = 4;
+    if (count <= magicNumber) {
+      this.setState({ count: count += 1 });
+    }
+  };
+
   handleTime = (duration) => {
     const numberSixty = 60;
     const numberTen = 10;
@@ -108,6 +116,17 @@ export default class Game extends Component {
               </button>
             );
           })}
+          <div>
+            { correctAnswer !== '' && (
+              <button
+                type="button"
+                data-testid="btn-next"
+                onClick={ this.handleNext }
+              >
+                Next
+              </button>
+            )}
+          </div>
         </section>
       </div>
     );
