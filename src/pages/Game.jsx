@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { fetchAPIQuest } from '../redux/actions';
+import './game.css';
 
 export default class Game extends Component {
   state = {
     results: [],
     count: 0,
     arrayAnswer: [],
+    correctAnswer: '',
+    answerWrong: '',
   };
 
   async componentDidMount() {
@@ -29,8 +32,12 @@ export default class Game extends Component {
     this.setState({ arrayAnswer: answerState });
   };
 
+  handleClick = () => {
+    this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
+  };
+
   render() {
-    const { results, count, arrayAnswer } = this.state;
+    const { results, count, arrayAnswer, correctAnswer, answerWrong } = this.state;
     return (
       <div>
         <Header />
@@ -51,6 +58,8 @@ export default class Game extends Component {
                 type="button"
                 data-testid="correct-answer"
                 key={ answer }
+                onClick={ this.handleClick }
+                className={ correctAnswer }
               >
                 {answer}
               </button>
@@ -59,6 +68,8 @@ export default class Game extends Component {
                 type="button"
                 key={ answer }
                 data-testid={ `wrong-answer-${count}` }
+                onClick={ this.handleClick }
+                className={ answerWrong }
               >
                 {answer}
               </button>
