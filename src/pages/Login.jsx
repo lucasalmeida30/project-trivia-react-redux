@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchAPIToken, userInfo } from '../redux/actions';
+import { fetchAPIQuest, fetchAPIToken, userInfo } from '../redux/actions';
 
 class Login extends Component {
   state = {
@@ -35,6 +35,7 @@ class Login extends Component {
     const { history, dispatch } = this.props;
     localStorage.setItem('token', getToken.token);
     dispatch(userInfo({ name, email }));
+    await fetchAPIQuest();
     history.push('/Game');
   };
 
