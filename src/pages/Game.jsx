@@ -11,9 +11,12 @@ export default class Game extends Component {
     arrayAnswer: [],
     correctAnswer: '',
     answerWrong: '',
+    duration: 30,
+    isButtonDisabled: false,
   };
 
   async componentDidMount() {
+    const numberThirty = 30;
     const { history } = this.props;
     const responseApi = await fetchAPIQuest();
     if (responseApi.length === 0) {
@@ -22,6 +25,7 @@ export default class Game extends Component {
     } else {
       this.setState({ results: responseApi }, this.handleQuestion);
     }
+    this.handleTime(numberThirty);
   }
 
   handleQuestion = () => {
@@ -36,14 +40,41 @@ export default class Game extends Component {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
   };
 
+  handleTime = (duration) => {
+    const numberSixty = 60;
+    const numberTen = 10;
+    const numberThousand = 1000;
+    const count = 1;
+    // count -= 1;
+    let timer = duration;
+    let seconds;
+    setInterval(() => {
+      seconds = parseInt(timer % numberSixty, numberTen);
+      seconds = seconds < numberTen ? `0${seconds}` : seconds;
+      this.setState({ duration: timer });
+      timer -= count;
+      if (timer < 0) {
+        timer = duration;
+        this.setState({ isButtonDisabled: true });
+      }
+    }, numberThousand);
+  };
+
   render() {
-    const { results, count, arrayAnswer, correctAnswer, answerWrong } = this.state;
+    const { results,
+      count,
+      arrayAnswer,
+      correctAnswer,
+      answerWrong,
+      duration,
+      isButtonDisabled } = this.state;
     return (
       <div>
         <Header />
         {
           results.length > 0 && (
             <div>
+              <p>{ duration }</p>
               <p data-testid="question-category">{results[count].category}</p>
               <p data-testid="question-text">{results[count].question}</p>
             </div>
@@ -60,6 +91,7 @@ export default class Game extends Component {
                 key={ answer }
                 onClick={ this.handleClick }
                 className={ correctAnswer }
+                disabled={ isButtonDisabled }
               >
                 {answer}
               </button>
@@ -70,6 +102,7 @@ export default class Game extends Component {
                 data-testid={ `wrong-answer-${count}` }
                 onClick={ this.handleClick }
                 className={ answerWrong }
+                disabled={ isButtonDisabled }
               >
                 {answer}
               </button>
