@@ -2,14 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
-import { fetchAPIQuest } from '../redux/actions';
+import { addTotalScore, fetchAPIQuest } from '../redux/actions';
 import './game.css';
-import user from '../redux/reducers/user';
 
-const EASY = 1;
-const MEDIUM = 2;
-const HARD = 3;
 const TEN = 10;
+const obj = { easy: 1, medium: 2, hard: 3 };
 
 class Game extends Component {
   state = {
@@ -45,23 +42,17 @@ class Game extends Component {
 
   handleClick = (c) => {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
-    let { score, assertions, dispatch } = this.props;
+    const { score, dispatch } = this.props;
     const { duration } = this.state;
-    let diffcult;
     const { results, count } = this.state;
     if (c === 'correto') {
-      if (results[count].difficulty === 'easy') {
-        diffcult = EASY;
-      } else if (results[count].difficulty === 'medium') {
-        diffcult = MEDIUM;
-      } else if (results[count].difficulty === 'hard') {
-        diffcult = HARD;
-      }
-      score += (TEN + duration * diffcult);
-      assertions += 1;
-      dispatch(user({ score, assertions }));
+      const scoreTotal = score + (TEN + duration * obj[results[count].difficulty]);
+      dispatch(addTotalScore(scoreTotal));
+    } else {
+      const zero = 0;
+      const scoreTotal = score + zero;
+      dispatch(addTotalScore(scoreTotal));
     }
-    console.log(score);
   };
 
   handleTime = (duration) => {
@@ -139,14 +130,15 @@ class Game extends Component {
 }
 
 const mapStateToProps = (globalState) => ({
-  score: globalState.user.player.score,
-  assertions: globalState.user.player.assertions,
+  score: globalState.player.score,
 });
 
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  score: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps)(Game);
