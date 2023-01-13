@@ -21,9 +21,9 @@ class Header extends Component {
 }
 
 const mapStateToProps = (globalState) => ({
-  email: globalState.user.email,
-  name: globalState.user.name,
-  score: globalState.user.score,
+  email: globalState.player.email,
+  name: globalState.player.name,
+  score: globalState.player.score,
 });
 
 Header.propTypes = {

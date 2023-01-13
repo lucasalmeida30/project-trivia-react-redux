@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
-import user from './user';
-import assertions from './assertions';
+import player from './player';
 
 const rootReducer = combineReducers({
-  user,
-  assertions,
+  player,
 });
 
 export default rootReducer;

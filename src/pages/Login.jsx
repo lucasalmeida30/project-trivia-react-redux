@@ -89,8 +89,8 @@ Login.propTypes = {
 };
 
 const mapStateToProps = (globalState) => ({
-  email: globalState.user.email,
-  name: globalState.user.name,
+  email: globalState.player.email,
+  name: globalState.player.name,
 });
 
 export default connect(mapStateToProps)(Login);

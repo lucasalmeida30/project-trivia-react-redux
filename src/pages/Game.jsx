@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
-import { fetchAPIQuest } from '../redux/actions';
+import { addTotalScore, fetchAPIQuest } from '../redux/actions';
 import './game.css';
 
-export default class Game extends Component {
+const TEN = 10;
+const obj = { easy: 1, medium: 2, hard: 3 };
+
+class Game extends Component {
   state = {
     results: [],
     count: 0,
@@ -36,8 +40,19 @@ export default class Game extends Component {
     this.setState({ arrayAnswer: answerState });
   };
 
-  handleClick = () => {
+  handleClick = (c) => {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
+    const { score, dispatch } = this.props;
+    const { duration } = this.state;
+    const { results, count } = this.state;
+    if (c === 'correto') {
+      const scoreTotal = score + (TEN + duration * obj[results[count].difficulty]);
+      dispatch(addTotalScore(scoreTotal));
+    } else {
+      const zero = 0;
+      const scoreTotal = score + zero;
+      dispatch(addTotalScore(scoreTotal));
+    }
   };
 
   handleNext = () => {
@@ -97,7 +112,7 @@ export default class Game extends Component {
                 type="button"
                 data-testid="correct-answer"
                 key={ answer }
-                onClick={ this.handleClick }
+                onClick={ () => this.handleClick('correto') }
                 className={ correctAnswer }
                 disabled={ isButtonDisabled }
               >
@@ -108,7 +123,7 @@ export default class Game extends Component {
                 type="button"
                 key={ answer }
                 data-testid={ `wrong-answer-${count}` }
-                onClick={ this.handleClick }
+                onClick={ () => this.handleClick('errado') }
                 className={ answerWrong }
                 disabled={ isButtonDisabled }
               >
@@ -133,8 +148,16 @@ export default class Game extends Component {
   }
 }
 
+const mapStateToProps = (globalState) => ({
+  score: globalState.player.score,
+});
+
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  score: PropTypes.number.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
+
+export default connect(mapStateToProps)(Game);
