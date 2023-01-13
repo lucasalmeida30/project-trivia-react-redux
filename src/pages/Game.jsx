@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { fetchAPIQuest } from '../redux/actions';
 import './game.css';
+import user from '../redux/reducers/user';
 
 const EASY = 1;
 const MEDIUM = 2;
@@ -42,19 +43,25 @@ class Game extends Component {
     this.setState({ arrayAnswer: answerState });
   };
 
-  handleClick = () => {
+  handleClick = (c) => {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
+    let { score, assertions, dispatch } = this.props;
     const { duration } = this.state;
     let diffcult;
     const { results, count } = this.state;
-    if (results[count].difficulty === 'easy') {
-      diffcult = EASY;
-    } else if (results[count].difficulty === 'medium') {
-      diffcult = MEDIUM;
-    } else if (results[count].difficulty === 'hard') {
-      diffcult = HARD;
+    if (c === 'correto') {
+      if (results[count].difficulty === 'easy') {
+        diffcult = EASY;
+      } else if (results[count].difficulty === 'medium') {
+        diffcult = MEDIUM;
+      } else if (results[count].difficulty === 'hard') {
+        diffcult = HARD;
+      }
+      score += (TEN + duration * diffcult);
+      assertions += 1;
+      dispatch(user({ score, assertions }));
     }
-    const score = (TEN + (duration * diffcult));
+    console.log(score);
   };
 
   handleTime = (duration) => {
@@ -106,7 +113,7 @@ class Game extends Component {
                 type="button"
                 data-testid="correct-answer"
                 key={ answer }
-                onClick={ this.handleClick }
+                onClick={ () => this.handleClick('correto') }
                 className={ correctAnswer }
                 disabled={ isButtonDisabled }
               >
@@ -117,7 +124,7 @@ class Game extends Component {
                 type="button"
                 key={ answer }
                 data-testid={ `wrong-answer-${count}` }
-                onClick={ this.handleClick }
+                onClick={ () => this.handleClick('errado') }
                 className={ answerWrong }
                 disabled={ isButtonDisabled }
               >
@@ -133,6 +140,7 @@ class Game extends Component {
 
 const mapStateToProps = (globalState) => ({
   score: globalState.user.player.score,
+  assertions: globalState.user.player.assertions,
 });
 
 Game.propTypes = {
