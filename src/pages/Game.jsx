@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
 import { fetchAPIQuest } from '../redux/actions';
 import './game.css';
 
-export default class Game extends Component {
+const EASY = 1;
+const MEDIUM = 2;
+const HARD = 3;
+const TEN = 10;
+
+class Game extends Component {
   state = {
     results: [],
     count: 0,
@@ -38,6 +44,17 @@ export default class Game extends Component {
 
   handleClick = () => {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
+    const { duration } = this.state;
+    let diffcult;
+    const { results, count } = this.state;
+    if (results[count].difficulty === 'easy') {
+      diffcult = EASY;
+    } else if (results[count].difficulty === 'medium') {
+      diffcult = MEDIUM;
+    } else if (results[count].difficulty === 'hard') {
+      diffcult = HARD;
+    }
+    const score = (TEN + (duration * diffcult));
   };
 
   handleTime = (duration) => {
@@ -114,8 +131,14 @@ export default class Game extends Component {
   }
 }
 
+const mapStateToProps = (globalState) => ({
+  score: globalState.user.player.score,
+});
+
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
 };
+
+export default connect(mapStateToProps)(Game);
