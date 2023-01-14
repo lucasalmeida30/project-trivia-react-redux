@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Header from '../components/Header';
-import { addTotalScore, fetchAPIQuest } from '../redux/actions';
+import { addAssertions, addTotalScore, fetchAPIQuest } from '../redux/actions';
 import './game.css';
 
 const magicNumber = 4;
 const TEN = 10;
 const obj = { easy: 1, medium: 2, hard: 3 };
-
 class Game extends Component {
   state = {
     results: [],
@@ -18,6 +17,7 @@ class Game extends Component {
     answerWrong: '',
     duration: 30,
     isButtonDisabled: false,
+    totalAssertions: 0,
   };
 
   async componentDidMount() {
@@ -29,7 +29,6 @@ class Game extends Component {
     } else {
       this.setState({ results: responseApi }, this.handleQuestion);
     }
-    // this.handleTime();
   }
 
   handleQuestion = () => {
@@ -43,17 +42,19 @@ class Game extends Component {
   handleClick = (c) => {
     this.setState({ correctAnswer: 'correct', answerWrong: 'wrong' });
     const { score, dispatch } = this.props;
-    const { duration } = this.state;
-    const { results, count } = this.state;
+    const { results, count, duration } = this.state;
+    let { totalAssertions } = this.state;
     clearInterval(this.id);
     if (c === 'correto') {
       const scoreTotal = score + (TEN + duration * obj[results[count].difficulty]);
       dispatch(addTotalScore(scoreTotal));
+      this.setState({ totalAssertions: totalAssertions += 1 });
     } else {
       const zero = 0;
       const scoreTotal = score + zero;
       dispatch(addTotalScore(scoreTotal));
     }
+    dispatch(addAssertions(totalAssertions));
   };
 
   handleNext = (event) => {
@@ -110,7 +111,6 @@ class Game extends Component {
             </div>
           )
         }
-
         <section data-testid="answer-options">
           {arrayAnswer.map((answer, index) => {
             const currentIndex = arrayAnswer.indexOf(results[count].correct_answer);
@@ -154,11 +154,9 @@ class Game extends Component {
     );
   }
 }
-
 const mapStateToProps = (globalState) => ({
   score: globalState.player.score,
 });
-
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
@@ -166,5 +164,4 @@ Game.propTypes = {
   score: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
-
 export default connect(mapStateToProps)(Game);
