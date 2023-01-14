@@ -4,6 +4,11 @@ import PropTypes from 'prop-types';
 import Header from '../components/Header';
 
 class Feedback extends Component {
+  handleclick = () => {
+    const { history } = this.props;
+    history.push('/');
+  };
+
   render() {
     const { assertions, score } = this.props;
     const numberThree = 3;
@@ -19,12 +24,22 @@ class Feedback extends Component {
         >
           {assertions}
         </p>
+        <button
+          type="button"
+          data-testid="btn-play-again"
+          onClick={ this.handleclick }
+        >
+          Play Again
+        </button>
       </div>
     );
   }
 }
 
 Feedback.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
   assertions: PropTypes.number.isRequired,
   score: PropTypes.number.isRequired,
 };
