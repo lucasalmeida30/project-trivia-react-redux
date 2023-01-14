@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { addTotalScore, fetchAPIQuest } from '../redux/actions';
 import './game.css';
 
+const magicNumber = 4;
 const TEN = 10;
 const obj = { easy: 1, medium: 2, hard: 3 };
 
@@ -20,7 +21,6 @@ class Game extends Component {
   };
 
   async componentDidMount() {
-    const numberThirty = 30;
     const { history } = this.props;
     const responseApi = await fetchAPIQuest();
     if (responseApi.length === 0) {
@@ -29,7 +29,7 @@ class Game extends Component {
     } else {
       this.setState({ results: responseApi }, this.handleQuestion);
     }
-    this.handleTime(numberThirty);
+    // this.handleTime();
   }
 
   handleQuestion = () => {
@@ -37,7 +37,7 @@ class Game extends Component {
     const arrayQ = [results[count].correct_answer, ...results[count].incorrect_answers];
     const numberRamdom = 0.5;
     const answerState = arrayQ.sort(() => Math.random() - numberRamdom);
-    this.setState({ arrayAnswer: answerState });
+    this.setState({ arrayAnswer: answerState }, this.handleTime);
   };
 
   handleClick = (c) => {
@@ -45,6 +45,7 @@ class Game extends Component {
     const { score, dispatch } = this.props;
     const { duration } = this.state;
     const { results, count } = this.state;
+    clearInterval(this.id);
     if (c === 'correto') {
       const scoreTotal = score + (TEN + duration * obj[results[count].difficulty]);
       dispatch(addTotalScore(scoreTotal));
@@ -55,29 +56,35 @@ class Game extends Component {
     }
   };
 
-  handleNext = () => {
+  handleNext = (event) => {
+    event.preventDefault();
     let { count } = this.state;
-    const magicNumber = 4;
-    if (count <= magicNumber) {
-      this.setState({ count: count += 1 });
+    // const { history } = this.props;
+    // const magicNumber = 4;
+    if (count < magicNumber) {
+      this.setState(({
+        count: count += 1,
+        correctAnswer: '',
+        answerWrong: '',
+        duration: 30 }), () => this.handleQuestion());
+    } else {
+      this.feedbackNext();
     }
   };
 
-  handleTime = (duration) => {
-    const numberSixty = 60;
-    const numberTen = 10;
+  feedbackNext = () => {
+    const { count, correctAnswer } = this.state;
+    const { history } = this.props;
+    if (count === magicNumber && correctAnswer !== '') history.push('/Feedback');
+  };
+
+  handleTime = () => {
     const numberThousand = 1000;
-    const count = 1;
-    // count -= 1;
-    let timer = duration;
-    let seconds;
-    setInterval(() => {
-      seconds = parseInt(timer % numberSixty, numberTen);
-      seconds = seconds < numberTen ? `0${seconds}` : seconds;
-      this.setState({ duration: timer });
-      timer -= count;
-      if (timer < 0) {
-        timer = duration;
+    this.id = setInterval(() => {
+      const { duration } = this.state;
+      this.setState((prev) => ({ duration: prev.duration - 1 }));
+      if (duration === 1) {
+        clearInterval(this.id);
         this.setState({ isButtonDisabled: true });
       }
     }, numberThousand);
